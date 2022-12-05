@@ -1,9 +1,7 @@
 pandas
 numpy
-sklearn
-streamlit
-streamlit_option_menu
-pyplot.express
-plotly.graph_objects
-
-
+plotly==5.8.0
+plotly-express==0.4.1
+scikit-learn
+streamlit==1.9.0
+streamlit-option-menu==0.3.2
