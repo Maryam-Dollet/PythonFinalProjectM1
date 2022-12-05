@@ -1,0 +1,9 @@
+pandas
+numpy
+sklearn
+streamlit
+streamlit_option_menu
+pyplot.express
+plotly.graph_objects
+
+
