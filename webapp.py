@@ -172,7 +172,8 @@ with st.sidebar:
 if selected == "Home":
     st.title('Introduction of the Database')
     st.markdown("This database is a study made on the consumption of various drugs, the survey asked diffents individuals from different gender, age, education, country and ethnicity")
-    st.markdown("In this survey, the consuption of 19 drugs was asked")
+    st.markdown("Participants were questioned concerning their use of 18 legal and illegal drugs")
+    st.markdown("For each drug they have to select one of the answers: never used the drug, used it over a decade ago, or in the last decade, year, month, week, or day.")
 
     table = ['ID','Age','Gender','Education','Country','Ethnicity','Nscore','Escore','Oscore','Ascore','Cscore','Impulsive','SS','Alcohol','Amphet','Amyl','Benzos','Caff','Cannabis','Choc','Coke','Crack','Ecstasy','Heroin','Ketamine','Legalh','LSD','Meth','Mushrooms','Nicotine','Semer','VSA']
     df_init = pd.read_csv("drug_consumption.data", sep =',', header=None,names= table)
