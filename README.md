@@ -11,7 +11,9 @@
 - [ Data cleaning and encoding ](#star2-data-cleanig-and-encoding)
 - [ Data Visualisation](#star2-datat-visualisation)
 - [ Machine learning model ](#star2-machine-learning)
+- [API](#star2-API)
 - [Conclusion](#star2-conclusion)
+
   
   
  <!-- About the Project -->
@@ -117,6 +119,15 @@ In order to improve our model we decided to binarize the data and considering th
 ![image](https://cdn.discordapp.com/attachments/1019278025981972592/1049262102516351009/image.png)
 
 We can see that the average accuracies are higher with binarization.
+
+ <!--API -->
+## :star2: API
+
+In our API, we will ask the age, gender, education, country, ethnicity and a drug.
+
+We made some tests in order to chose the best model for our API and it was logistic regression.
+
+We developed our API with streamlit.
 
  <!--Conclusion -->
 ## :star2: Conclusion
