@@ -190,7 +190,7 @@ def MachineLearning(user_input):
         country = -0.46841
     elif(country == 'Other'):
         country = -0.28519
-    elif(country == 'Republic of Ireland'):
+    elif(country == 'Ireland'):
         country = 0.21128
     elif(country == 'UK'):
         country = 0.96082
