@@ -236,7 +236,7 @@ RESF_HTML_TEMPLATE = """
 """
 
 REST_HTML_TEMPLATE = """
-<h2 style='text-align: center; color: red;'> The person consumed {} last year </h2>
+<h2 style='text-align: center; color: red;'> The person has consumed {} last year </h2>
 """
 
 def modeling_API():
