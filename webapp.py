@@ -232,7 +232,7 @@ def MachineLearning(user_input):
         st.error('Error')
 
 RESF_HTML_TEMPLATE = """
-<h2 style='text-align: center; color: green;'> The person didn't consumed {} last year </h2>
+<h2 style='text-align: center; color: green;'> The person didn't consume {} last year </h2>
 """
 
 REST_HTML_TEMPLATE = """
