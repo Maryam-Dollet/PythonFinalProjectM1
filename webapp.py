@@ -23,6 +23,16 @@ models = {
             'K Neighbors Classifier': KNeighborsClassifier(),
             'Decision Tree Classifier': DecisionTreeClassifier()}
 
+education_order = ['Left school before 16 years',
+                    'Left school at 16 years',
+                    'Left school at 17 years',
+                    'Left school at 18 years',
+                    'Some college or university, no certificate or degree',
+                    'Professional certificate/ diploma',
+                    'University degree',
+                    'Masters degree',
+                    'Doctorate degree']
+
 drugs = ['Alcohol',
          'Amyl',
          'Amphet',
@@ -93,6 +103,182 @@ def models_for_drug_consumer(data, binarizer):
     df_results = df_results.set_axis(drug_names)
     return df_results
 
+def MachineLearning(user_input):
+    drug_df = df_ML.copy()
+    drug_df = drug_df[['Age', 'Gender', 'Education', 'Country', 'Ethnicity', user_input[5]]]
+
+    drug_df[user_input[5]] = np.where(drug_df[user_input[5]] >= 3, 1, 0)
+
+    Y = drug_df[user_input[5]]
+    X = drug_df.drop(user_input[5], axis=1)
+
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=1)
+
+    scaler = StandardScaler()
+    scaler.fit(X_train)
+
+    X_train = pd.DataFrame(scaler.transform(X_train), index=X_train.index, columns=X_train.columns)
+    X_test = pd.DataFrame(scaler.transform(X_test), index=X_test.index, columns=X_test.columns)
+
+    model = LogisticRegression(solver='lbfgs',max_iter=1000)
+    model.fit(X_train, Y_train)
+
+    yhat = model.predict(X_test)
+    accuracy = accuracy_score(Y_test, yhat)
+    st.markdown('Accuracy of the model: {}'.format(str(accuracy)))
+
+    # Age :
+
+    age = user_input[0]
+    if(age == '18-24'):
+        age = -0.95197
+    elif(age == '25-34'):
+        age = -0.07854
+    elif(age == '35-44'):
+        age = 0.49788 
+    elif(age == '45-54'):
+        age = 1.09449 
+    elif(age == '55-64'):
+        age = 1.82213 
+    elif(age == '65+'):
+        age = 2.59171 
+    else:
+        st.error('Error')
+
+    # Gender :
+
+    gender = user_input[1]
+    if(gender == 'Female'):
+        gender = 0.48246 
+    elif(gender == 'Male'):
+        gender = -0.48246
+    else:
+        st.error('Error')
+
+    # Education :
+
+    education = user_input[2]
+    if(education == "Left school before 16 years"):
+        education = -2.43591
+    elif(education == 'Left school at 16 years'):
+        education = -1.73790
+    elif(education == 'Left school at 17 years'):
+        education = -1.43719
+    elif(education == 'Left school at 18 years'):
+        education = -1.22751
+    elif(education == 'Some college or university, no certificate or degree'):
+        education = -0.61113 
+    elif(education == 'Professional certificate/ diploma'):
+        education = -0.05921
+    elif(education == 'University degree'):
+        education = 0.45468
+    elif(education == 'Masters degree'):
+        education = 1.16365
+    elif(education == 'Doctorate degree'):
+        education = 1.98437
+    else:
+        st.error('Error')
+
+    # Country :
+
+    country = user_input[3]
+    if(country == "Australia"):
+        country = -0.09765
+    elif(country == "Canada"):
+        country = 0.24923
+    elif(country == 'New Zealand'):
+        country = -0.46841
+    elif(country == 'Other'):
+        country = -0.28519
+    elif(country == 'Republic of Ireland'):
+        country = 0.21128
+    elif(country == 'UK'):
+        country = 0.96082
+    elif(country == 'USA'):
+        country = -0.57009
+    else:
+        st.error('Error')
+
+    # Ethnicity :
+
+    ethnicity = user_input[4]
+    if(ethnicity == 'Asian'):
+        ethnicity = -0.50212
+    elif(ethnicity == 'Black'):
+        ethnicity = -1.10702
+    elif(ethnicity == 'Mixed-Black/Asian'):
+        ethnicity = 1.90725
+    elif(ethnicity == 'Mixed-White/Asian'):
+        ethnicity = 0.12600
+    elif(ethnicity == 'Mixed-White/Black'):
+        ethnicity = -0.22166
+    elif(ethnicity == 'Other'):
+        ethnicity = 0.11440
+    elif(ethnicity == 'White'):
+        ethnicity = -0.31685
+    else:
+        st.error('Error') 
+
+    prediction = model.predict([[age, gender, education, country, ethnicity]])
+    prediction = int(prediction[0])
+
+    if (prediction == 0):
+        st.success("Prediction Finished")
+        st.markdown(RESF_HTML_TEMPLATE.format(str(user_input[5])), unsafe_allow_html=True)
+    elif (prediction == 1):
+        st.success("Prediction Finished")
+        st.markdown(REST_HTML_TEMPLATE.format(str(user_input[5])), unsafe_allow_html=True)
+    else:
+        st.error('Error')
+
+RESF_HTML_TEMPLATE = """
+<h2 style='text-align: center; color: green;'> The person didn't consumed {} last year </h2>
+"""
+
+REST_HTML_TEMPLATE = """
+<h2 style='text-align: center; color: red;'> The person consumed {} last year </h2>
+"""
+
+def modeling_API():
+    
+    model_names =[]
+    drug_names = []
+    values = []
+    l = []
+    for drug in drugs:
+        
+        drug_df = df_ML[['Age', 'Gender', 'Education', 'Country', 'Ethnicity', drug]].copy()
+        drug_df[drug] = np.where(drug_df[drug] >= 3, 1, 0)
+        Y = drug_df[drug]
+        X = drug_df.drop(drug, axis=1)
+    
+    
+        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2,random_state=1)
+        scaler = StandardScaler()
+        scaler.fit(X_train)
+        X_train = pd.DataFrame(scaler.transform(X_train), 
+                               index=X_train.index, 
+                               columns=X_train.columns)
+        X_test = pd.DataFrame(scaler.transform(X_test), 
+                              index=X_test.index, 
+                              columns=X_test.columns)
+        drug_names.append(drug)
+       
+        for name, model in models.items():
+            model_names.append(name)
+          
+            model.fit(X_train, Y_train)
+            yhat = model.predict(X_test)
+            acc = accuracy_score(Y_test, yhat)
+            
+            values.append(acc) 
+
+    split_values = [values[x:x+len(models)] for x in range(0, len(values), len(models))]
+    model_names = model_names[:len(models)]
+    df_results = pd.DataFrame(split_values, columns = model_names)
+    df_results = df_results.set_axis(drug_names)
+    return df_results
+
 def displayHeatmap(df, transpose, color):
 
     if transpose == True:
@@ -125,7 +311,7 @@ ex = False
 with st.sidebar:
     selected = option_menu(
         menu_title = "Main Menu",
-        options = ["Home","Data Analysis","Machine Learning"]
+        options = ["Home","Data Analysis","Machine Learning", "Forecasting"]
     )
     
     if selected == "Data Analysis":
@@ -170,10 +356,10 @@ with st.sidebar:
 
 
 if selected == "Home":
+    st.snow()
     st.title('Introduction of the Database')
     st.markdown("This database is a study made on the consumption of various drugs, the survey asked diffents individuals from different gender, age, education, country and ethnicity")
-    st.markdown("Participants were questioned concerning their use of 18 legal and illegal drugs")
-    st.markdown("For each drug they have to select one of the answers: never used the drug, used it over a decade ago, or in the last decade, year, month, week, or day.")
+    st.markdown("In this survey, the consuption of 18 drugs was asked")
 
     table = ['ID','Age','Gender','Education','Country','Ethnicity','Nscore','Escore','Oscore','Ascore','Cscore','Impulsive','SS','Alcohol','Amphet','Amyl','Benzos','Caff','Cannabis','Choc','Coke','Crack','Ecstasy','Heroin','Ketamine','Legalh','LSD','Meth','Mushrooms','Nicotine','Semer','VSA']
     df_init = pd.read_csv("drug_consumption.data", sep =',', header=None,names= table)
@@ -287,16 +473,6 @@ if selected == "Data Analysis":
     df_map = df_map[['Age', 'Education', 'LSD']]
     df_map = df_map.pivot(index='Age', columns='Education', values="LSD")
 
-    education_order = ['Left school before 16 years',
-                    'Left school at 16 years',
-                    'Left school at 17 years',
-                    'Left school at 18 years',
-                    'Some college or university, no certificate or degree',
-                    'Professional certificate/ diploma',
-                    'University degree',
-                    'Masters degree',
-                    'Doctorate degree']
-
     df_map = df_map[education_order]
 
     heatmap1 = displayHeatmap(df_map, True, 'YlGnBu')
@@ -367,6 +543,7 @@ if selected == "Data Analysis":
     
 if selected == "Machine Learning":
     st.title('Machine Learning')
+    st.markdown('---')
     st.markdown("After the encoding of the data in the drug columns we get this database for testing the machine learning models :")
     st.write(df_ML)
 
@@ -376,6 +553,7 @@ if selected == "Machine Learning":
     st.markdown("It might take a while to perform 6 models on 17 drug colums.")
     st.markdown("The purpose is to find the best model for each drug, to evaluate this we will calculate the accuracy of each model")
     st.markdown("Click on the button to start the analysis !")
+
     if st.button('Start'):
 
         df_results = models_for_drug_consumer(df_ML, binarizer = False)
@@ -475,5 +653,62 @@ if selected == "Machine Learning":
         st.markdown("After this analysis we can conclude that our best model to predict all drug consumers is on average Random Forest")
         st.markdown("However, we can apply a different model that performed the best on the drug in question. For instance, Logistic Regression for Meth or Support Vector Machine for LSD")
 
+    st.header("Machine Learning for the API")
+    st.markdown("We are going to search the best model for our API")
+    st.markdown("the difference between the first Analysis is that this time, we only take the variables Age, Gender, Education, Country and Ethnicity")
 
+    if st.button('Start API analysis'):
+
+        df_API_results = modeling_API()
+
+        st.subheader("Heatmap of our results with binarization")
+        HeatAPI = px.imshow(df_API_results.transpose(),title=" Heatmap of the accuracies for our API")
+
+        st.plotly_chart(HeatAPI)
+
+        st.subheader("Graph showing the best predicted model")
+
+        figAPI = go.Figure()
+
+        for model in list(models.keys()):
+            figAPI.add_trace(go.Scatter(
+            x=drugs,
+            y=df_API_results[model].sort_values(),
+            name=model
+            ))
+        figAPI.update_layout(title='Best model performance API')
+
+        st.plotly_chart(figAPI)
+
+        df_API_mean=pd.DataFrame(df_API_results.mean(),columns=["mean"])
+        st.write(df_API_mean)
+
+        figAPImean = px.line(df_API_mean, title='Mean of the accuracy for each model')
+        st.plotly_chart(figAPImean)
+
+        st.markdown('The results show that overall all the models have a good performance but Logistic Regression has the best results so we are going to implement this model for our API')
+
+if selected == "Forecasting":
+    st.title('Forecast of Drug Consumption')
+    st.markdown('---')
+    st.markdown("User Input")
+    
+
+    with st.form(key = 'form1'):
+        set_drug = st.selectbox("Drug to forecast", options = ['Cannabis', 'Heroin', 'Ecstasy', "Amphet", "Coke"])
+
+        ind_age = st.selectbox("Age", options = sorted(df_analysis['Age'].unique()))
+        ind_gender = st.selectbox("Gender", options = df_analysis['Gender'].unique())
+        ind_edu = st.selectbox("Education", options = education_order)
+        ind_country = st.selectbox("Country", options = df_analysis['Country'].unique())
+        ind_ethni = st.selectbox("Ethnicity", options = sorted(df_analysis['Ethnicity'].unique()))
+
+        form_submit = st.form_submit_button("Apply")
+    
+    if form_submit == True:
+        user_in = [ind_age,ind_gender, ind_edu, ind_country, ind_ethni, set_drug]
+
+        st.success("You have successfully applied the parameters for the prediction")
+        st.write(user_in)
+        MachineLearning(user_in)
 
